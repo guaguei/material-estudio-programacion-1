@@ -1,82 +1,158 @@
+/* style.css */
+
+/* Variables para colores del tema */
+:root {
+    /* Tema Claro (valores por defecto) */
+    --color-background-primary: #f4f4f4;
+    --color-background-secondary: #ffffff;
+    --color-text-primary: #333333;
+    --color-text-secondary: #555555;
+    --color-heading-primary: #2c3e50;
+    --color-link: #3498db;
+    --color-link-hover: #2980b9;
+    --color-border: #dddddd;
+    --color-code-background: #f0f0f0;
+    --color-code-text: #c7254e;
+}
+
+/* Tema Oscuro */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background-primary: #1a1a1a; /* Fondo oscuro principal */
+        --color-background-secondary: #2c2c2c; /* Fondo oscuro secundario para secciones/tarjetas */
+        --color-text-primary: #e0e0e0; /* Texto claro */
+        --color-text-secondary: #b0b0b0; /* Texto secundario más suave */
+        --color-heading-primary: #e0e0e0; /* Títulos claros */
+        --color-link: #87ceeb; /* Azul cielo para enlaces (visible en oscuro) */
+        --color-link-hover: #4682b4; /* Azul acero para hover */
+        --color-border: #444444; /* Bordes sutiles */
+        --color-code-background: #3a3a3a; /* Fondo de código oscuro */
+        --color-code-text: #add8e6; /* Texto de código claro (azul pálido) */
+    }
+}
+
+/* Estilos Generales */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave para el cambio de tema */
 }
 
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem 0;
+    background-color: var(--color-background-secondary);
+    color: var(--color-heading-primary);
+    padding: 1.5rem 0;
     text-align: center;
+    border-bottom: 1px solid var(--color-border);
 }
 
 header h1 {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 2.5em;
+    color: var(--color-heading-primary);
 }
 
 header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #ccc;
+    margin: 0.5rem 0;
+    font-size: 1.8em;
+    color: var(--color-heading-primary);
 }
 
 header p {
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
+    font-size: 1.1em;
+    color: var(--color-text-secondary);
 }
 
 main {
     padding: 20px;
     max-width: 900px;
     margin: 20px auto;
-    background-color: #fff;
+    background-color: var(--color-background-secondary);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 
-.unidad {
+section.unidad {
     margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    background-color: var(--color-background-secondary);
 }
 
-.unidad:last-child {
-    border-bottom: none;
+section.unidad h3 {
+    color: var(--color-heading-primary);
+    border-bottom: 2px solid var(--color-link);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-.unidad h3 {
-    color: #0056b3;
-    font-size: 1.8rem;
+section.unidad h4 {
+    color: var(--color-heading-primary);
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.unidad h4 {
-    color: #555;
-    font-size: 1.3rem;
-    margin-top: 15px;
-    margin-bottom: 8px;
+section.unidad p {
+    margin-bottom: 10px;
+    color: var(--color-text-primary);
 }
 
-.unidad ul {
+section.unidad ul {
     list-style-type: disc;
-    margin-left: 25px;
-    padding: 0;
+    margin-left: 20px;
+    margin-bottom: 10px;
 }
 
-.unidad ul li {
+section.unidad ul ul { /* Para listas anidadas */
+    list-style-type: circle;
+    margin-top: 5px;
     margin-bottom: 5px;
+}
+
+section.unidad li {
+    margin-bottom: 5px;
+    color: var(--color-text-primary);
+}
+
+strong {
+    color: var(--color-heading-primary); /* Asegura que el texto fuerte sea visible */
+}
+
+a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--color-link-hover);
+}
+
+pre {
+    background-color: var(--color-code-background);
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: var(--color-code-text);
 }
 
 footer {
     text-align: center;
     padding: 20px;
     margin-top: 30px;
-    background-color: #333;
-    color: #fff;
-    font-size: 0.9rem;
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border-top: 1px solid var(--color-border);
 }
