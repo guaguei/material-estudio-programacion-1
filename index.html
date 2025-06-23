@@ -79,6 +79,35 @@ int main() {
                 <li><strong>Dominio de cada Tipo:</strong> El rango de valores que un tipo de dato específico puede almacenar. Por ejemplo, un `int` puede almacenar números enteros dentro de un cierto rango definido por el sistema.</li>
                 <li><strong>Operaciones válidas:</strong> Las acciones permitidas sobre un tipo de dato, como suma para números, concatenación para cadenas, etc.</li>
                 <li><strong>Ocupación de Memoria:</strong> La cantidad de bytes que cada tipo de dato requiere para ser almacenado en la memoria RAM de la computadora.</li>
+                <li><strong>Punteros (Pointers):</strong>
+                    <p>Un puntero es una variable especial que almacena la dirección de memoria de otra variable. En lugar de guardar un valor directamente, guarda la "ubicación" donde se encuentra ese valor. Son fundamentales en C para la asignación dinámica de memoria, el manejo de arreglos de forma eficiente y el paso de argumentos por referencia a funciones.</p>
+                    <p><strong>Declaración:</strong> Se usa el asterisco (`*`) para indicar que una variable es un puntero.</p>
+                    <pre><code class="language-c">
+int *ptr_entero; // Declara un puntero a un entero
+float *ptr_flotante; // Declara un puntero a un flotante
+                    </code></pre>
+                    <p><strong>Operador de Dirección (`&`):</strong> Se usa para obtener la dirección de memoria de una variable.</p>
+                    <pre><code class="language-c">
+int numero = 10;
+int *ptr_numero;
+ptr_numero = &numero; // ptr_numero ahora contiene la dirección de memoria de 'numero'
+                    </code></pre>
+                    <p><strong>Operador de Desreferencia (`*`):</strong> Se usa para acceder al valor almacenado en la dirección de memoria a la que apunta el puntero.</p>
+                    <pre><code class="language-c">
+int valor_obtenido = *ptr_numero; // valor_obtenido ahora es 10 (el valor de 'numero')
+printf("El valor al que apunta ptr_numero es: %d\n", *ptr_numero);
+*ptr_numero = 20; // Cambia el valor de 'numero' a través del puntero
+printf("El nuevo valor de numero es: %d\n", numero); // Ahora 'numero' es 20
+                    </code></pre>
+                    <p><strong>Punteros y Arreglos:</strong> En C, el nombre de un arreglo a menudo se comporta como un puntero al primer elemento del arreglo. Esto permite usar aritmética de punteros para recorrer arreglos.</p>
+                    <pre><code class="language-c">
+int arr[] = {10, 20, 30};
+int *p = arr; // p apunta a arr[0]
+printf("Primer elemento: %d\n", *p); // 10
+printf("Segundo elemento (usando aritmetica de punteros): %d\n", *(p + 1)); // 20
+printf("Tercer elemento (usando p[2]): %d\n", p[2]); // 30
+                    </code></pre>
+                </li>
                 <li><strong>Datos Compuestos:</strong> Tipos de datos creados a partir de la combinación de tipos primitivos o de otros tipos compuestos (ej., estructuras, arrays).</li>
                 <li><strong>Estructuras de Datos:</strong> Maneras específicas de organizar los datos en la memoria para que puedan ser utilizados de manera eficiente. No son los datos en sí, sino la forma de relacionarlos y acceder a ellos.</li>
                 <li><strong>Estructuras estáticas y dinámicas:</strong>
@@ -323,20 +352,144 @@ int main() {
 }
                     </code></pre>
                 </li>
+                <li><strong>Asignación Dinámica de Memoria:</strong>
+                    <p>La asignación dinámica de memoria permite a los programas solicitar y liberar memoria en tiempo de ejecución, es decir, mientras el programa se está ejecutando. Esto es crucial cuando el tamaño de los datos no se conoce de antemano (por ejemplo, el número de elementos que el usuario va a ingresar).</p>
+                    <p>Las funciones principales de la biblioteca `stdlib.h` para la gestión dinámica de memoria son:</p>
+                    <ul>
+                        <li>`malloc()`: Asigna un bloque de memoria del tamaño especificado en bytes y devuelve un puntero a la primera ubicación de ese bloque. Si falla, devuelve `NULL`.</li>
+                        <pre><code class="language-c">
+#include &lt;stdlib.h&gt; // Para malloc, free
+
+int *ptr_dinamico;
+int cantidad_elementos = 5;
+// Asigna memoria para 5 enteros
+ptr_dinamico = (int *) malloc(cantidad_elementos * sizeof(int));
+
+if (ptr_dinamico == NULL) {
+    printf("Error: No se pudo asignar memoria.\n");
+    return 1; // Salir con error
+}
+
+// Usar la memoria asignada
+for (int i = 0; i < cantidad_elementos; i++) {
+    ptr_dinamico[i] = i * 10;
+    printf("%d ", ptr_dinamico[i]);
+}
+printf("\n");
+                        </code></pre>
+                        <li>`calloc()`: Asigna un bloque de memoria para un número específico de elementos, cada uno de un tamaño dado, e inicializa todos los bits del bloque a cero.</li>
+                        <pre><code class="language-c">
+#include &lt;stdlib.h&gt;
+
+float *arr_flotantes;
+// Asigna memoria para 3 flotantes e inicializa a 0.0
+arr_flotantes = (float *) calloc(3, sizeof(float));
+
+if (arr_flotantes == NULL) {
+    printf("Error: No se pudo asignar memoria.\n");
+    return 1;
+}
+printf("Primer elemento de calloc (debe ser 0.0): %.1f\n", arr_flotantes[0]);
+                        </code></pre>
+                        <li>`realloc()`: Cambia el tamaño de un bloque de memoria previamente asignado. Puede expandirlo o reducirlo, y devuelve un puntero al nuevo bloque (que podría ser la misma ubicación o una nueva).</li>
+                        <pre><code class="language-c">
+#include &lt;stdlib.h&gt;
+
+int *arr_actual;
+arr_actual = (int *) malloc(2 * sizeof(int)); // Asigna para 2 enteros
+arr_actual[0] = 1; arr_actual[1] = 2;
+printf("Original: %d %d\n", arr_actual[0], arr_actual[1]);
+
+// Reasigna para 4 enteros
+arr_actual = (int *) realloc(arr_actual, 4 * sizeof(int));
+if (arr_actual == NULL) {
+    printf("Error: No se pudo reasignar memoria.\n");
+    return 1;
+}
+arr_actual[2] = 3; arr_actual[3] = 4;
+printf("Reasignado: %d %d %d %d\n", arr_actual[0], arr_actual[1], arr_actual[2], arr_actual[3]);
+                        </code></pre>
+                        <li>`free()`: Libera un bloque de memoria previamente asignado dinámicamente, devolviéndolo al sistema. Es crucial para evitar fugas de memoria (memory leaks).</li>
+                        <pre><code class="language-c">
+// Después de usar ptr_dinamico, calloc_ptr o realloc_ptr
+free(ptr_dinamico);
+ptr_dinamico = NULL; // Buena práctica para evitar "dangling pointers"
+                        </code></pre>
+                    </ul>
+                </li>
                 <li><strong>Procedimientos de Ordenación y Búsqueda Binaria:</strong>
                     <ul>
                         <li><strong>Ordenación:</strong> Algoritmos para organizar los elementos de un arreglo en un orden específico (ascendente o descendente), como el método de burbuja, selección, inserción.</li>
                         <li><strong>Búsqueda Binaria:</strong> Un algoritmo de búsqueda eficiente que funciona en listas o arreglos *ordenados*, dividiendo repetidamente por la mitad la porción de la lista que podría contener el elemento.</li>
                     </ul>
                 </li>
-                <li><strong>Estructuras Dinámicas:</strong> Estructuras de datos que pueden expandirse o contraerse en tiempo de ejecución, asignando y liberando memoria según sea necesario. Requieren el uso de punteros.</li>
-                <li><strong>Listas, Pilas y Colas:</strong>
-                    <ul>
-                        <li><strong>Listas (enlazadas):</strong> Colecciones de nodos donde cada nodo contiene un dato y una referencia al siguiente nodo, permitiendo una inserción y eliminación flexible.</li>
-                        <li><strong>Pilas (Stack):</strong> Estructura de datos LIFO (Last In, First Out), donde el último elemento añadido es el primero en ser retirado (ej., pila de platos). Operaciones: `push` (añadir), `pop` (quitar).</li>
-                        <li><strong>Colas (Queue):</strong> Estructura de datos FIFO (First In, First Out), donde el primer elemento añadido es el primero en ser retirado (ej., cola de espera). Operaciones: `enqueue` (añadir), `dequeue` (quitar).</li>
-                    </ul>
+                <li><strong>Estructuras Dinámicas:</strong> Estructuras de datos que pueden expandirse o contraerse en tiempo de ejecución, asignando y liberando memoria según sea necesario. Requieren el uso de punteros y asignación dinámica de memoria.</li>
+                <li><strong>Listas Enlazadas:</strong>
+                    <p>Una lista enlazada es una estructura de datos lineal donde los elementos no se almacenan en ubicaciones de memoria contiguas, a diferencia de los arreglos. Cada elemento (llamado "nodo") contiene no solo los datos, sino también una referencia (un puntero) al siguiente nodo en la secuencia.</p>
+                    <p>Esto permite una inserción y eliminación eficiente de elementos en cualquier posición, ya que solo se necesita ajustar los punteros, no desplazar elementos.</p>
+                    <pre><code class="language-c">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt; // Para malloc, free
+
+// Definición de la estructura de un nodo de la lista
+struct Nodo {
+    int dato;
+    struct Nodo *siguiente; // Puntero al siguiente nodo
+};
+
+// Función para insertar un nodo al principio de la lista
+void insertarPrincipio(struct Nodo **cabeza, int nuevo_dato) {
+    // 1. Crear un nuevo nodo dinámicamente
+    struct Nodo *nuevo_nodo = (struct Nodo *) malloc(sizeof(struct Nodo));
+    if (nuevo_nodo == NULL) {
+        printf("Error de asignación de memoria.\n");
+        return;
+    }
+
+    // 2. Asignar el dato al nuevo nodo
+    nuevo_nodo->dato = nuevo_dato;
+
+    // 3. El siguiente del nuevo nodo es la cabeza actual
+    nuevo_nodo->siguiente = *cabeza;
+
+    // 4. La cabeza ahora es el nuevo nodo
+    *cabeza = nuevo_nodo;
+}
+
+// Función para imprimir la lista
+void imprimirLista(struct Nodo *nodo) {
+    while (nodo != NULL) {
+        printf("%d -> ", nodo->dato);
+        nodo = nodo->siguiente;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    struct Nodo *cabeza = NULL; // La lista inicialmente está vacía
+
+    insertarPrincipio(&cabeza, 30);
+    insertarPrincipio(&cabeza, 20);
+    insertarPrincipio(&cabeza, 10); // La lista ahora es 10 -> 20 -> 30 -> NULL
+
+    printf("Lista enlazada: ");
+    imprimirLista(cabeza);
+
+    // Liberar la memoria (importante para evitar memory leaks)
+    struct Nodo *actual = cabeza;
+    struct Nodo *siguiente;
+    while (actual != NULL) {
+        siguiente = actual->siguiente;
+        free(actual);
+        actual = siguiente;
+    }
+    cabeza = NULL; // Buena práctica
+    return 0;
+}
+                    </code></pre>
                 </li>
+                <li><strong>Pilas (Stack):</strong> Estructura de datos LIFO (Last In, First Out), donde el último elemento añadido es el primero en ser retirado (ej., pila de platos). Operaciones: `push` (añadir), `pop` (quitar).</li>
+                <li><strong>Colas (Queue):</strong> Estructura de datos FIFO (First In, First Out), donde el primer elemento añadido es el primero en ser retirado (ej., cola de espera). Operaciones: `enqueue` (añadir), `dequeue` (quitar).</li>
                 <li><strong>Árboles binarios:</strong> Una estructura de datos jerárquica no lineal donde cada nodo tiene como máximo dos nodos hijos (izquierdo y derecho). Utilizados para organizar datos de forma eficiente para búsqueda y ordenación.</li>
                 <li><strong>Operaciones con estructuras dinámicas: Recorrido, búsqueda, inserción:</strong> Métodos específicos para interactuar con estas estructuras complejas, considerando su naturaleza dinámica.</li>
                 <li><strong>Archivos:</strong> Cómo un programa puede interactuar con el sistema de archivos del sistema operativo para leer y escribir datos de forma persistente en el disco duro, permitiendo almacenar información más allá de la ejecución del programa.
@@ -486,35 +639,54 @@ int main() {
                         <li><strong>Efectivos (o actuales):</strong> Los valores o variables reales que se pasan a la función cuando esta es invocada (ej., `5, 3` en `sumar(5, 3)`).</li>
                     </ul>
                 </li>
-                <li><strong>Recursividad:</strong> Es la técnica por la cual una función se llama a sí misma directa o indirectamente para resolver un problema. Es útil para problemas que pueden dividirse en subproblemas similares más pequeños.
+                <li><strong>Recursividad:</strong>
+                    <p>La recursividad es una técnica de programación poderosa donde una función se llama a sí misma para resolver un problema. Es especialmente útil para problemas que pueden dividirse en subproblemas más pequeños que son de la misma naturaleza que el problema original. Una función recursiva debe tener dos partes fundamentales:</p>
+                    <ul>
+                        <li><strong>Caso Base:</strong> Una condición que, cuando se cumple, permite a la función devolver un valor sin hacer más llamadas recursivas. Esto es crucial para evitar bucles infinitos.</li>
+                        <li><strong>Paso Recursivo:</strong> La parte donde la función se llama a sí misma con argumentos que se acercan al caso base, resolviendo una versión más pequeña del problema.</li>
+                    </ul>
+                    <p><strong>Ejemplo: Cálculo del factorial de un número.</strong></p>
                     <pre><code class="language-c">
 // Ejemplo: Cálculo del factorial de un número usando recursividad
 int factorial(int n) {
+    // Caso Base: Si n es 0, el factorial es 1
     if (n == 0) {
-        return 1; // Caso base: factorial de 0 es 1
+        return 1;
     } else {
-        return n * factorial(n - 1); // Llamada recursiva
+        // Paso Recursivo: n * factorial de (n-1)
+        // La función se llama a sí misma con un argumento más pequeño
+        return n * factorial(n - 1);
     }
 }
 
 int main() {
-    int num = 4;
+    int num = 4; // Calcular 4! (4 * 3 * 2 * 1 = 24)
     printf("El factorial de %d es: %d\n", num, factorial(num)); // 24
+
+    int num2 = 0; // Calcular 0! (debe ser 1)
+    printf("El factorial de %d es: %d\n", num2, factorial(num2)); // 1
     return 0;
 }
-                            </code></pre>
+                    </code></pre>
+                    <p><strong>Pila de Llamadas (Call Stack):</strong> Cada vez que una función recursiva se llama a sí misma, se crea un nuevo "marco" en la pila de llamadas de la memoria. Este marco contiene las variables locales y el punto de retorno de esa llamada específica. Una vez que se alcanza el caso base, las llamadas se empiezan a "desapilar" en orden inverso, resolviendo los resultados intermedios hasta que se devuelve el resultado final a la llamada original.</p>
                 </li>
                 <li><strong>Modularización de un programa en varios archivos:</strong> Organizar el código de un proyecto grande en múltiples archivos `.c` (con la implementación de funciones) y archivos `.h` (cabeceras, con las declaraciones de funciones y estructuras), para mejorar la organización, compilación y reusabilidad.
                     <pre><code class="language-c">
 // --- archivo: funciones.h ---
 // Prototipo de la función
 int sumar(int a, int b);
+void saludar(char *nombre);
 
 // --- archivo: funciones.c ---
 #include "funciones.h" // Incluye el archivo de cabecera
+#include &lt;stdio.h&gt; // Necesario para printf en esta función
 
 int sumar(int a, int b) {
     return a + b;
+}
+
+void saludar(char *nombre) {
+    printf("Hola, %s desde funciones.c!\n", nombre);
 }
 
 // --- archivo: main.c ---
@@ -524,9 +696,11 @@ int sumar(int a, int b) {
 int main() {
     int resultado = sumar(10, 5);
     printf("Resultado de la suma: %d\n", resultado);
+    saludar("Carlos");
     return 0;
 }
 // Para compilar: gcc main.c funciones.c -o programa
+// Se compilan todos los archivos .c juntos.
                     </code></pre>
                 </li>
             </ul>
@@ -538,56 +712,222 @@ int main() {
             <h4>Contenidos clave:</h4>
             <ul>
                 <li><strong>Concepto de Programación orientada a objetos (POO):</strong> Un paradigma de programación que utiliza "objetos" como bloques fundamentales. Los objetos combinan datos (atributos) y el comportamiento (métodos) que opera sobre esos datos.
-                    <p>Aunque C no es un lenguaje POO nativo, se pueden simular conceptos de POO usando estructuras y punteros a funciones.</p>
+                    <p>Aunque C no es un lenguaje POO nativo, se pueden simular muchos de sus conceptos clave utilizando las herramientas disponibles en C, como estructuras y punteros a funciones. Esto requiere una comprensión más profunda de cómo se organizan los datos y el comportamiento de manera modular.</p>
                 </li>
                 <li><strong>Diferencia entre programación estructurada y programación orientada a objetos:</strong>
                     <ul>
-                        <li><strong>Estructurada:</strong> Se enfoca en procedimientos (funciones) que operan sobre datos separados.</li>
-                        <li><strong>POO:</strong> Se enfoca en objetos que agrupan datos y los métodos que los manipulan, promoviendo la cohesión.</li>
+                        <li><strong>Estructurada:</strong> Se enfoca en procedimientos (funciones) que operan sobre datos separados. El foco está en el "cómo" se realiza el proceso.</li>
+                        <li><strong>POO:</strong> Se enfoca en objetos que agrupan datos y los métodos que los manipulan, promoviendo la cohesión. El foco está en "qué" entidades existen y cómo interactúan.</li>
                     </ul>
                 </li>
                 <li><strong>Beneficios de la aplicación de la programación orientada a objetos:</strong>
                     <ul>
                         <li><strong>Reusabilidad:</strong> El código de los objetos puede ser reutilizado en diferentes partes de un programa o en programas distintos.</li>
-                        <li><strong>Mantenibilidad:</strong> El código es más fácil de depurar, modificar y mantener debido a su organización modular.</li>
-                        <li><strong>Escalabilidad:</strong> Facilita el crecimiento y la adición de nuevas funcionalidades sin afectar el código existente.</li>
-                        <li><strong>Legibilidad:</strong> El código es más comprensible al reflejar entidades del mundo real.</li>
+                        <li><strong>Mantenibilidad:</strong> El código es más fácil de depurar, modificar y mantener debido a su organización modular y la encapsulación.</li>
+                        <li><strong>Escalabilidad:</strong> Facilita el crecimiento y la adición de nuevas funcionalidades sin afectar significativamente el código existente.</li>
+                        <li><strong>Legibilidad:</strong> El código es más comprensible al reflejar entidades del mundo real, haciendo el diseño más intuitivo.</li>
                     </ul>
                 </li>
-                <li><strong>Principios de la programación orientada a objetos:</strong>
+                <li><strong>Principios de la programación orientada a objetos (Simulación en C):</strong>
                     <ul>
-                        <li><strong>Encapsulamiento:</strong> Agrupar datos y métodos que operan sobre esos datos dentro de una única unidad (el objeto), ocultando los detalles internos de implementación.
+                        <li><strong>Encapsulamiento:</strong>
+                            <p>Se refiere a la agrupación de datos (atributos) y las funciones (métodos) que operan sobre esos datos en una única unidad (el "objeto" o, en C, una estructura junto con funciones que la manipulan). Su objetivo es ocultar los detalles internos de implementación de un objeto, exponiendo solo una interfaz controlada.</p>
+                            <p>En C, se simula con `struct` para los datos y un conjunto de funciones que toman punteros a esa `struct` como argumento, operando solo a través de esas funciones para mantener la integridad de los datos.</p>
                             <pre><code class="language-c">
-// Simulación de encapsulamiento en C con un struct y funciones
+// Simulación de encapsulamiento en C con un struct y funciones "públicas"
 typedef struct {
     char nombre[50];
-    int edad;
+    int edad; // Considerado como un atributo privado o protegido
 } Persona;
 
-// Función para inicializar (constructor "simulado")
+// Función para inicializar (actúa como un constructor)
 void inicializar_persona(Persona *p, const char *nom, int ed) {
-    strcpy(p->nombre, nom);
-    p->edad = ed;
+    if (p != NULL) {
+        strcpy(p->nombre, nom);
+        if (ed > 0) { // Validación simple para encapsular la lógica de edad
+            p->edad = ed;
+        } else {
+            p->edad = 0;
+            printf("Advertencia: Edad inválida, se estableció en 0.\n");
+        }
+    }
 }
 
-// Función para mostrar datos (método "simulado")
+// Función para obtener la edad (actúa como un "getter")
+int obtener_edad(const Persona *p) {
+    return (p != NULL) ? p->edad : -1; // Retorna -1 si el puntero es NULL
+}
+
+// Función para mostrar datos (actúa como un método público)
 void mostrar_persona(const Persona *p) {
-    printf("Nombre: %s, Edad: %d\n", p->nombre, p->edad);
+    if (p != NULL) {
+        printf("Nombre: %s, Edad: %d\n", p->nombre, p->edad);
+    }
 }
 
 /*
 int main() {
     Persona p1;
     inicializar_persona(&p1, "Ana", 25);
-    mostrar_persona(&p1);
+    mostrar_persona(&p1); // Acceso controlado a los datos
+    printf("La edad de Ana es: %d\n", obtener_edad(&p1));
+
+    Persona p2;
+    inicializar_persona(&p2, "Luis", -5); // Ejemplo de validación
+    mostrar_persona(&p2);
     return 0;
 }
 */
                             </code></pre>
                         </li>
-                        <li><strong>Herencia:</strong> Permite que una clase (clase hija) herede propiedades y comportamientos de otra clase (clase padre), promoviendo la reusabilidad del código. (Más complejo de simular directamente en C).</li>
-                        <li><strong>Polimorfismo:</strong> La capacidad de que un objeto tome muchas formas o de que una misma interfaz pueda ser usada para diferentes tipos de datos o clases. Incluye la sobrecarga y la sobrescritura de métodos.</li>
-                        <li><strong>Abstracción:</strong> Mostrar solo la información esencial al usuario y ocultar los detalles de implementación complejos.</li>
+                        <li><strong>Herencia:</strong>
+                            <p>Permite que una clase (clase hija o subclase) adquiera propiedades y comportamientos (atributos y métodos) de otra clase (clase padre o superclase). Promueve la reutilización de código y establece relaciones "es un tipo de" (e.g., un "Coche" *es un tipo de* "Vehículo").</p>
+                            <p>En C, la herencia se simula anidando una estructura dentro de otra. Esto permite a la estructura "hija" contener todos los miembros de la estructura "padre", pero la relación de comportamiento (métodos) y polimorfismo es mucho más compleja de manejar manualmente.</p>
+                            <pre><code class="language-c">
+// Simulación de Herencia en C
+struct Vehiculo {
+    int velocidad_max;
+    char color[20];
+};
+
+struct Coche {
+    struct Vehiculo base; // La estructura "padre" anidada
+    int num_puertas;
+};
+
+/*
+int main() {
+    struct Coche mi_coche;
+    mi_coche.base.velocidad_max = 200; // Acceso a miembros heredados
+    strcpy(mi_coche.base.color, "Rojo");
+    mi_coche.num_puertas = 4;
+
+    printf("Coche color %s, velocidad max: %d, puertas: %d\n",
+           mi_coche.base.color, mi_coche.base.velocidad_max, mi_coche.num_puertas);
+    return 0;
+}
+*/
+                            </code></pre>
+                        </li>
+                        <li><strong>Polimorfismo:</strong>
+                            <p>Significa "muchas formas". Permite que objetos de diferentes clases puedan ser tratados como objetos de una clase común, y que un mismo método pueda comportarse de manera diferente en distintas clases. Esto facilita la escritura de código más genérico y flexible.</p>
+                            <p>En C, el polimorfismo se simula de forma más manual y compleja, a menudo utilizando punteros a funciones. Se puede crear una tabla de funciones (similar a una "tabla de métodos virtuales") dentro de una estructura, y luego asignar diferentes implementaciones de función a esos punteros para cada "tipo" de objeto.</p>
+                            <pre><code class="language-c">
+// Simulación de Polimorfismo en C usando punteros a funciones
+typedef struct {
+    void (*saludar)(void *); // Puntero a función "saludar"
+    void (*mostrar_info)(void *); // Puntero a función "mostrar_info"
+} InterfazComun;
+
+typedef struct {
+    InterfazComun *vtable; // "Tabla de funciones virtuales"
+    char nombre[50];
+} Gato;
+
+typedef struct {
+    InterfazComun *vtable;
+    char nombre[50];
+    char raza[50];
+} Perro;
+
+void saludar_gato(void *animal) {
+    Gato *g = (Gato *)animal;
+    printf("Miau, soy %s!\n", g->nombre);
+}
+
+void mostrar_info_gato(void *animal) {
+    Gato *g = (Gato *)animal;
+    printf("Gato: %s\n", g->nombre);
+}
+
+void saludar_perro(void *animal) {
+    Perro *p = (Perro *)animal;
+    printf("Guau, soy %s!\n", p->nombre);
+}
+
+void mostrar_info_perro(void *animal) {
+    Perro *p = (Perro *)animal;
+    printf("Perro: %s, Raza: %s\n", p->nombre, p->raza);
+}
+
+// Implementaciones de las vtables para cada "clase"
+InterfazComun Gato_vtable = {saludar_gato, mostrar_info_gato};
+InterfazComun Perro_vtable = {saludar_perro, mostrar_info_perro};
+
+/*
+int main() {
+    Gato mi_gato = {&Gato_vtable, "Minino"};
+    Perro mi_perro = {&Perro_vtable, "Fido", "Golden"};
+
+    // Tratamos a ambos como un tipo común a través de sus vtables
+    mi_gato.vtable->saludar(&mi_gato);
+    mi_perro.vtable->saludar(&mi_perro);
+
+    mi_gato.vtable->mostrar_info(&mi_gato);
+    mi_perro.vtable->mostrar_info(&mi_perro);
+    return 0;
+}
+*/
+                            </code></pre>
+                        </li>
+                        <li><strong>Abstracción:</strong>
+                            <p>Consiste en enfocarse en los aspectos esenciales de un objeto o sistema, ocultando los detalles irrelevantes o de implementación. Se trata de crear modelos simplificados del mundo real.</p>
+                            <p>En C, se logra principalmente a través de los archivos de cabecera (`.h`). Un archivo `.h` declara las funciones (la interfaz pública) y las estructuras opacas (para ocultar los detalles de implementación de los datos), mientras que el archivo `.c` correspondiente contiene la implementación detallada.</p>
+                            <pre><code class="language-c">
+// --- archivo: Animal.h (Abstracción de la interfaz) ---
+// Declaración de una estructura opaca (detalles ocultos)
+typedef struct Animal Animal;
+
+// Prototipos de funciones que operan sobre Animal (la interfaz)
+Animal* crear_animal(const char *nombre);
+void hacer_sonido(Animal *a);
+void liberar_animal(Animal *a);
+
+// --- archivo: Animal.c (Implementación, detalles ocultos) ---
+#include "Animal.h"
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Definición completa de la estructura Animal (detalle de implementación)
+struct Animal {
+    char nombre[50];
+    // Otros atributos y posibles punteros a funciones específicas
+};
+
+Animal* crear_animal(const char *nombre) {
+    Animal *nuevo_animal = (Animal *) malloc(sizeof(Animal));
+    if (nuevo_animal != NULL) {
+        strcpy(nuevo_animal->nombre, nombre);
+    }
+    return nuevo_animal;
+}
+
+void hacer_sonido(Animal *a) {
+    if (a != NULL) {
+        printf("%s hace un sonido.\n", a->nombre);
+    }
+}
+
+void liberar_animal(Animal *a) {
+    free(a);
+}
+
+// --- archivo: main.c (Uso de la abstracción) ---
+#include "Animal.h"
+// El main.c no necesita saber cómo está implementado Animal, solo cómo usarlo.
+/*
+int main() {
+    Animal *mi_animal = crear_animal("Leo");
+    if (mi_animal != NULL) {
+        hacer_sonido(mi_animal); // Llamada a la interfaz abstracta
+        liberar_animal(mi_animal);
+    }
+    return 0;
+}
+*/
+                            </code></pre>
+                        </li>
                     </ul>
                 </li>
                 <li><strong>Métodos con el mismo indicador y distinto número de parámetros:</strong> Esto se refiere a la **Sobrecarga de Métodos** (un tipo de polimorfismo estático), donde una clase puede tener múltiples métodos con el mismo nombre, pero que se diferencian por la cantidad o el tipo de sus parámetros. (No es una característica directa de C, pero se puede simular con nombres de funciones diferentes o macros).</li>
